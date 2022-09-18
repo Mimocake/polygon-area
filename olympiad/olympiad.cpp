@@ -1,5 +1,6 @@
 #include <iostream>
 #include <math.h>
+#include <vector>
 using namespace std;
 
 class Dot
@@ -8,6 +9,7 @@ private:
     double x;
     double y;
 public:
+    Dot() : x(0), y(0) {}
     Dot(double X, double Y) : x(X), y(Y) {}
     friend double length(Dot dot1, Dot dot2)
     {
@@ -15,14 +17,17 @@ public:
     }
     double getx() { return x; }
     double gety() { return y; }
-    friend ostream& operator << (ostream& c, Dot d);
+    friend ostream& operator << (ostream& c, Dot d)
+    {
+        c << '(' << d.x << ", " << d.y << ')';
+        return c;
+    }
+    friend istream& operator >> (istream& c, Dot& d)
+    {
+        c >> d.x >> d.y;
+        return c;
+    }
 };
-
-ostream& operator << (ostream& c, Dot d)
-{
-    c << '(' << d.x << ", " << d.y << ')';
-    return c;
-}
 
 class Line
 {
@@ -52,12 +57,40 @@ public:
  
 class Polygon
 {
-    Dot* dots;
+private:
+    vector<Dot> dots;
+public:
+    Polygon(vector<Dot>& d) : dots(d) {}
+    void info()
+    {
+        cout << "Number of vertex: " << dots.size();
+        cout << "\nDots:\n";
+        for (int i = 0; i < dots.size(); i++)
+        {
+            cout << dots[i] << endl;
+        }
+    }
+    double area()
+    {
+        double ar = 0;
+        for (int i = 2; i < dots.size(); i++)
+        {
+            ar += Triangle(dots[0], dots[i - 1], dots[i]).area();
+        }
+        return ar;
+    }
 };
 
 int main()
 {
-    Line l1(Dot(1, 1), Dot(2, 2));
-    Line l2(Dot(3, 3), Dot(4, 4));
-    cout << (l1 + l2);
+    int x;
+    cin >> x;
+    vector<Dot> dots(x);
+    for (int i = 0; i < x; i++)
+    {
+        cin >> dots[i];
+    }
+    Polygon p(dots);
+    p.info();
+    cout << p.area();
 }
